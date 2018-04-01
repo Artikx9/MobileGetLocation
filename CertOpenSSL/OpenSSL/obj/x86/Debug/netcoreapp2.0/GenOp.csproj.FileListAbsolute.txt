@@ -1,0 +1,13 @@
+D:\MyWork\Open\CertOpenSSL\OpenSSL\bin\x86\Debug\netcoreapp2.0\GenOp.deps.json
+D:\MyWork\Open\CertOpenSSL\OpenSSL\bin\x86\Debug\netcoreapp2.0\GenOp.runtimeconfig.json
+D:\MyWork\Open\CertOpenSSL\OpenSSL\bin\x86\Debug\netcoreapp2.0\GenOp.runtimeconfig.dev.json
+D:\MyWork\Open\CertOpenSSL\OpenSSL\bin\x86\Debug\netcoreapp2.0\GenOp.dll
+D:\MyWork\Open\CertOpenSSL\OpenSSL\bin\x86\Debug\netcoreapp2.0\GenOp.pdb
+D:\MyWork\Open\CertOpenSSL\OpenSSL\bin\x86\Debug\netcoreapp2.0\ManagedOpenSsl.dll
+D:\MyWork\Open\CertOpenSSL\OpenSSL\obj\x86\Debug\netcoreapp2.0\GenOp.csprojResolveAssemblyReference.cache
+D:\MyWork\Open\CertOpenSSL\OpenSSL\obj\x86\Debug\netcoreapp2.0\GenOp.csproj.CoreCompileInputs.cache
+D:\MyWork\Open\CertOpenSSL\OpenSSL\obj\x86\Debug\netcoreapp2.0\GenOp.AssemblyInfoInputs.cache
+D:\MyWork\Open\CertOpenSSL\OpenSSL\obj\x86\Debug\netcoreapp2.0\GenOp.AssemblyInfo.cs
+D:\MyWork\Open\CertOpenSSL\OpenSSL\obj\x86\Debug\netcoreapp2.0\GenOp.csproj.CopyComplete
+D:\MyWork\Open\CertOpenSSL\OpenSSL\obj\x86\Debug\netcoreapp2.0\GenOp.dll
+D:\MyWork\Open\CertOpenSSL\OpenSSL\obj\x86\Debug\netcoreapp2.0\GenOp.pdb

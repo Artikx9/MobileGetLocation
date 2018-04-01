@@ -1,0 +1,11 @@
+D:\MyWork\Open\OpenSSL\OpenSSL\bin\Debug\netcoreapp2.0\OpenSSL.deps.json
+D:\MyWork\Open\OpenSSL\OpenSSL\bin\Debug\netcoreapp2.0\OpenSSL.runtimeconfig.json
+D:\MyWork\Open\OpenSSL\OpenSSL\bin\Debug\netcoreapp2.0\OpenSSL.runtimeconfig.dev.json
+D:\MyWork\Open\OpenSSL\OpenSSL\bin\Debug\netcoreapp2.0\OpenSSL.dll
+D:\MyWork\Open\OpenSSL\OpenSSL\bin\Debug\netcoreapp2.0\OpenSSL.pdb
+D:\MyWork\Open\OpenSSL\OpenSSL\obj\Debug\netcoreapp2.0\OpenSSL.csprojResolveAssemblyReference.cache
+D:\MyWork\Open\OpenSSL\OpenSSL\obj\Debug\netcoreapp2.0\OpenSSL.csproj.CoreCompileInputs.cache
+D:\MyWork\Open\OpenSSL\OpenSSL\obj\Debug\netcoreapp2.0\OpenSSL.AssemblyInfoInputs.cache
+D:\MyWork\Open\OpenSSL\OpenSSL\obj\Debug\netcoreapp2.0\OpenSSL.AssemblyInfo.cs
+D:\MyWork\Open\OpenSSL\OpenSSL\obj\Debug\netcoreapp2.0\OpenSSL.dll
+D:\MyWork\Open\OpenSSL\OpenSSL\obj\Debug\netcoreapp2.0\OpenSSL.pdb

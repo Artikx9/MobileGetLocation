@@ -1,0 +1,9 @@
+D:\MyWork\Open\BuilderCert\BuilderCert\bin\Debug\BuilderCert.exe.config
+D:\MyWork\Open\BuilderCert\BuilderCert\bin\Debug\BuilderCert.exe
+D:\MyWork\Open\BuilderCert\BuilderCert\bin\Debug\BuilderCert.pdb
+D:\MyWork\Open\BuilderCert\BuilderCert\bin\Debug\ManagedOpenSsl.dll
+D:\MyWork\Open\BuilderCert\BuilderCert\obj\Debug\BuilderCert.csprojResolveAssemblyReference.cache
+D:\MyWork\Open\BuilderCert\BuilderCert\obj\Debug\BuilderCert.csproj.CoreCompileInputs.cache
+D:\MyWork\Open\BuilderCert\BuilderCert\obj\Debug\BuilderCert.csproj.CopyComplete
+D:\MyWork\Open\BuilderCert\BuilderCert\obj\Debug\BuilderCert.exe
+D:\MyWork\Open\BuilderCert\BuilderCert\obj\Debug\BuilderCert.pdb
