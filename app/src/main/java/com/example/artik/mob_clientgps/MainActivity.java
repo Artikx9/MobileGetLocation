@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -54,7 +55,35 @@ public class MainActivity extends AppCompatActivity {
     EditText txtId, txtkey;
     TextView txtResponse;
     Button button;
-    LocationListener listener;
+
+
+    private LocationListener  listener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            //получаем долготу и широту
+            Latitude = location.getLatitude();
+            Longitude = location.getLongitude();
+            if(location != null)
+            {
+                txtLatitude.setText("Широта= " + Latitude);        //вывод широты
+                txtLongitude.setText("Долгота= " + Longitude);   //вывод долготы
+            }
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+        }
+    }; //слушаем полуение местоположения
+
+
 
     static Double Latitude, Longitude;  //переменные хранение координат
     static String HASH; // переменная для хранения кэша
@@ -81,12 +110,12 @@ public class MainActivity extends AppCompatActivity {
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         REQUEST_LOCATION);
 
-            } else {
-
             }
             return;
         }
-
+        final LocationManager locationManager = (LocationManager)   //создаем менджер локаций
+                getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener); //привязывай слушатель и менджер локации
 
         //Получение ключа и ИД устроства и вывод их
         idDevice = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -99,24 +128,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                txtLatitude.setText("Широта= " + Latitude);        //вывод широты
-                txtLongitude.setText("Долгота= " + Longitude);   //вывод долготы
-                String str = "http://192.168.43.174:3000/api/stuff?id=" + idDevice + "&encdata=" + Encryption();  //формирование строки запроса
-                URL url = null;
-                try {
-                    url = new URL(str);   //создание URL для отправки GET запроса
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
 
-                HttpURLConnection con = null;
-                try {
-                    con = (HttpURLConnection) url.openConnection(); // Отправка GET запроса
-                    txtResponse.setText(con.getRequestMethod());   //вывод метода запроса
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+                new GetAsync().execute(); //создаем  и вызываем 2 поток
             }
         };
 
@@ -183,56 +196,43 @@ public class MainActivity extends AppCompatActivity {
         return Base64.encodeToString(encodedBytes, Base64.DEFAULT);  //переводи в Base64
     }
 
-  //функция получения текущих координат
-    private void GetLocation() {
-        final LocationManager locationManager = (LocationManager)   //создаем менджер локаций
-                getSystemService(Context.LOCATION_SERVICE);
-        //Проверяем доступ на запрос к местопложению
-        listener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                //получаем долготу и широту
-                Latitude = location.getLatitude();
-                Longitude = location.getLongitude();
-            }
 
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-        };
-        //проверка разрешений на использовании локации
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener); //привязывай слушатель и менджер локации
-    }
 
     @Override    //перегружаем метод запроса разрешения
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_LOCATION) {
             if (grantResults.length == 1
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                GetLocation();  //если пользователь резрешил вызываем метод получения координат
                 Intent intent =  new Intent(getBaseContext(), MainActivity.class);
                 startActivity(intent); //перезапускаем активити
             }
 
         }
 
+    }
+
+
+    private void SendGet() throws IOException {
+        String str = "http://25.56.107.197:3000/api/stuff?id=" + idDevice + "&encdata=" + Encryption();  //формирование строки запроса
+        URL url = new URL(str);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection(); // Отправка GET запроса
+        if(con.getResponseCode()==HttpURLConnection.HTTP_OK)
+        {
+
+        }
+    } //функция оптравки  Get запроса
+
+    class GetAsync extends AsyncTask<Void,Void,Void> //класс 2 потока
+    {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                SendGet(); //вызываем фукнкцию отправки
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
     }
 }
