@@ -17,7 +17,16 @@
         android:text="Lot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000"
+        android:text="HOST:"/>
+    <EditText
+        android:id="@+id/idHost"
+        android:hint="host:port"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
     <Button
         android:id="@+id/btnGet"
         android:layout_width="match_parent"

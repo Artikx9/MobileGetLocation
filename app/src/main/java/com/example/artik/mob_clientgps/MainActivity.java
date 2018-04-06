@@ -4,58 +4,45 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.UriMatcher;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Build;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
-
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import android.Manifest;
-
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class MainActivity extends AppCompatActivity {
 
     static public final int REQUEST_LOCATION = 1;  // идентификации локации запроса на разрешение
-    EditText txtLongitude, txtLatitude;
+    EditText txtLongitude, txtLatitude, txtHost;
     EditText txtId, txtkey;
     TextView txtResponse;
     Button button;
-
+    GenerateKey generateKey;
 
     private LocationListener  listener = new LocationListener() {
         @Override
@@ -88,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     static Double Latitude, Longitude;  //переменные хранение координат
     static String HASH; // переменная для хранения кэша
     static String idDevice;  //переменная для хранения ИД устройства
-    static SecretKeySpec sks;  // Переменная для хранения сгенерированого секретного ключа
+    static String host="25.56.107.197:3000";
     static String key = "qwertyuiopasdfghjklzxcvbnmqwerty"; // Здесь можно задать статический ключ
 
     @Override
@@ -100,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         txtId = findViewById(R.id.idAndroid);
         txtkey = findViewById(R.id.keyAndroid);
         txtResponse = findViewById(R.id.txtResponse);
+        txtHost = findViewById(R.id.idHost);
         button = findViewById(R.id.btnGet);
 
        //Проверка, предоставлено ли разрешение или запрашивается ли оно с использованием ранее определенной константы
@@ -117,11 +105,16 @@ public class MainActivity extends AppCompatActivity {
                 getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, listener); //привязывай слушатель и менджер локации
 
+        generateKey = new GenerateKey(this);
+        if (generateKey.isFirstTimeLaunch()) {
+            generateKey.GenKey();
+        }
         //Получение ключа и ИД устроства и вывод их
+
         idDevice = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
         txtId.setText(idDevice);
-        GenKey();
-        txtkey.setText(Base64.encodeToString(sks.getEncoded(), Base64.NO_WRAP));
+        txtkey.setText(generateKey.getKey());
+        txtHost.setText(host);
 
         //Слушатель нажатия кнопки
         View.OnClickListener onClick = new View.OnClickListener() {
@@ -136,21 +129,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(onClick);
     }
 
-    @SuppressLint("NewApi")        //Функция генерации ключа
-    static void GenKey() {
-        // Set up secret key spec for 128-bit AES encryption and decryption
-        sks = null;
-        try {
-            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");  //генерация  криптографических случайных чисел с расширяемым входом  SHA1PRNG
-            sr.setSeed("any data used as random seed".getBytes()); //дополянем существющее семя для увеличение случайности
-            KeyGenerator kg = KeyGenerator.getInstance("AES");    //указываем  алгориnм  шифрования   AES
-            kg.init(256, sr); //указываем размер 256 бит
-            sks = new SecretKeySpec((kg.generateKey()).getEncoded(), "AES"); // создаем ключ
-        } catch (Exception e) {
-            Log.e("KEY GEN", "AES secret key spec error");
-        }
 
-    }
 
     @SuppressLint("NewApi") //функция получения кэша
     static String GetHash() {
@@ -175,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         return hex;
     }
     //функция шифрования
-    static String Encryption() {
+    private String Encryption() {
         Calendar dating = Calendar.getInstance();
         SimpleDateFormat formating = new SimpleDateFormat("HH:mm");
         String txtEncod = "time:" + formating.format(dating.getTime())
@@ -184,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         // Encode the original data with AES
         byte[] encodedBytes = null;
         try {
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "AES");  //получаем статический ключ используя Алгоритм AES
+            SecretKeySpec secretKeySpec = new SecretKeySpec(Base64.decode(generateKey.getKey().getBytes(),Base64.NO_WRAP), "AES");  //получаем статический ключ используя Алгоритм AES
             Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding"); //создаем класс шифрования, устанавливаем AES - это блок-шифр,CBC - это режим блочного шифрования,PKCS5Padding обработка неполного блолка
             IvParameterSpec iv = new IvParameterSpec(newIv); //создаем вектор инициализации
             c.init(Cipher.ENCRYPT_MODE, secretKeySpec, iv); //иницилизируем этот шифр ключем
@@ -213,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void SendGet() throws IOException {
-        String str = "http://25.56.107.197:3000/api/stuff?id=" + idDevice + "&encdata=" + Encryption();  //формирование строки запроса
+        String str = "http://"+host+"/api/stuff?id=" + idDevice + "&encdata=" + Encryption();  //формирование строки запроса
         URL url = new URL(str);
         HttpURLConnection con = (HttpURLConnection) url.openConnection(); // Отправка GET запроса
         if(con.getResponseCode()==HttpURLConnection.HTTP_OK)
