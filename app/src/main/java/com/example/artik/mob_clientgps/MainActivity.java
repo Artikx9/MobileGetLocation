@@ -17,11 +17,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -40,10 +45,10 @@ public class MainActivity extends AppCompatActivity {
     static public final int REQUEST_LOCATION = 1;  // идентификации локации запроса на разрешение
     EditText txtLongitude, txtLatitude, txtHost;
     EditText txtId, txtkey;
-    TextView txtResponse;
+   
     Button button;
     GenerateKey generateKey;
-
+    WebView web;
     private LocationListener  listener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
@@ -86,10 +91,10 @@ public class MainActivity extends AppCompatActivity {
         txtLongitude = findViewById(R.id.txtLongitude);
         txtId = findViewById(R.id.idAndroid);
         txtkey = findViewById(R.id.keyAndroid);
-        txtResponse = findViewById(R.id.txtResponse);
+
         txtHost = findViewById(R.id.idHost);
         button = findViewById(R.id.btnGet);
-
+        web = (WebView)findViewById(R.id.idWeb);
        //Проверка, предоставлено ли разрешение или запрашивается ли оно с использованием ранее определенной константы
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -195,9 +200,31 @@ public class MainActivity extends AppCompatActivity {
         String str = "http://"+txtHost.getText().toString()+"/api/stuff?id=" + idDevice + "&encdata=" + Encryption();  //формирование строки запроса
         URL url = new URL(str);
         HttpURLConnection con = (HttpURLConnection) url.openConnection(); // Отправка GET запроса
-        if(con.getResponseCode()==HttpURLConnection.HTTP_OK)
-        {
-
+        if(con.getResponseCode()==HttpURLConnection.HTTP_OK) {
+            String result = null;
+            StringBuffer sb = new StringBuffer();
+            InputStream is = null;
+            try {
+                is = new BufferedInputStream(con.getInputStream());
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                String inputLine = "";
+                while ((inputLine = br.readLine()) != null) {
+                    sb.append(inputLine);
+                }
+                result = sb.toString();
+                web.loadData(result,"text/html; charset=UTF-8", null);
+            } catch (Exception e) {
+                Log.i("Response", "Error reading InputStream");
+                result = null;
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        Log.i("Response", "Error closing InputStream");
+                    }
+                }
+            }
         }
     } //функция оптравки  Get запроса
 
