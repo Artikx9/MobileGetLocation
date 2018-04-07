@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     static Double Latitude, Longitude;  //переменные хранение координат
     static String HASH; // переменная для хранения кэша
     static String idDevice;  //переменная для хранения ИД устройства
-    static String host="25.56.107.197:3000";
+    static String host="192.168.137.150:3000";
     static String key = "qwertyuiopasdfghjklzxcvbnmqwerty"; // Здесь можно задать статический ключ
 
     @Override
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         // Encode the original data with AES
         byte[] encodedBytes = null;
         try {
-            SecretKeySpec secretKeySpec = new SecretKeySpec(Base64.decode(generateKey.getKey().getBytes(),Base64.NO_WRAP), "AES");  //получаем статический ключ используя Алгоритм AES
+            SecretKeySpec secretKeySpec = new SecretKeySpec(generateKey.getKey().getBytes(), "AES");  //получаем статический ключ используя Алгоритм AES
             Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding"); //создаем класс шифрования, устанавливаем AES - это блок-шифр,CBC - это режим блочного шифрования,PKCS5Padding обработка неполного блолка
             IvParameterSpec iv = new IvParameterSpec(newIv); //создаем вектор инициализации
             c.init(Cipher.ENCRYPT_MODE, secretKeySpec, iv); //иницилизируем этот шифр ключем
@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void SendGet() throws IOException {
-        String str = "http://"+host+"/api/stuff?id=" + idDevice + "&encdata=" + Encryption();  //формирование строки запроса
+        String str = "http://"+txtHost.getText().toString()+"/api/stuff?id=" + idDevice + "&encdata=" + Encryption();  //формирование строки запроса
         URL url = new URL(str);
         HttpURLConnection con = (HttpURLConnection) url.openConnection(); // Отправка GET запроса
         if(con.getResponseCode()==HttpURLConnection.HTTP_OK)
